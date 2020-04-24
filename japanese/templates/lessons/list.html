@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Уроки{% endblock %}
+
+{% block content %}
+
+<h2>Список уроков:</h2>
+
+    {% if lessons_list %}
+
+        {% for a in lessons_list %}
+            <p><a href="{% url 'lessons:detail' a.id %}">{{a.id}}  {{a.title}}</a></p>
+        {% endfor %}
+
+    {% else %}
+        Уроки не найдены
+    {% endif %}
+
+{% endblock %}

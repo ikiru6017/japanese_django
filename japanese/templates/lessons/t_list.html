@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Задания{% endblock %}
+
+{% block content %}
+
+<h2>Список заданий:</h2>
+
+    {% if tasks_list %}
+
+        {% for b in tasks_list %}
+            <p><a href="{% url 'lessons:task_detail' lesson.id b.task_num b.task_part %}">{{b.task_num}}</a></p>
+        {% endfor %}
+
+    {% else %}
+        Задания не найдены
+    {% endif %}
+
+
+{% endblock %}

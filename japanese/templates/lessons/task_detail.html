@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}{{lesson.title}}{% endblock %}
+
+{% block content %}
+
+<h2>{{lesson.id}}   {{lesson.title}}</h2>
+<hr>
+
+{% if tasks_list %}
+
+    <p>Задание №{{task.task_num}}</p>
+    <p></p>
+    <p></p>
+    <p>{{task.task_part}}  {{task.task_title}}</p>
+    <p></p>
+    <p>{{task.task_text}}</p>
+    <!-- {% for b in tasks_list %}
+        <p>
+            <p>{{b.task_num}}</p>
+            <p></p>
+            <p></p>
+            <p>{{b.task_part}}  {{b.task_title}}</p>
+            <p></p>
+            <p>{{b.task_text}}</p>
+        </p>
+    {% endfor %} -->
+
+{% else %}
+Заданий пока нет
+{% endif %}
+
+{% if not a1 %}
+<form action="{% url 'lessons:next_task' lesson.id task.task_num task.task_part %}" method="POST">
+
+    {% csrf_token %}
+    
+    <textarea name="text" required="" placeholder="Текст ответа" cols="70" rows="2"></textarea><br>
+    
+    <button type="submit">Следующее</button>
+              
+</form>
+{% endif %}
+
+{% if a1 %}
+    <form action="{% url 'lessons:task_detail' lesson.id task.task_num task.task_part %}" method="POST"></form>
+        
+        {% csrf_token %}
+
+        <p><b>Варианты ответа:</b></p>
+        <p><input type="radio" name="answer" value="a1">{{ a1 }}<Br>
+        <input type="radio" name="answer" value="a2">{{ a2 }}<Br>
+        <p><input type="submit" value="Отправить"></p>
+    </form>
+    <hr>
+{% endif %}
+ 
+{% endblock %}
