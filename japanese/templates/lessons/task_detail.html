@@ -4,55 +4,65 @@
 
 {% block content %}
 
-<h2>{{lesson.id}}   {{lesson.title}}</h2>
-<hr>
+    <article class="media content-section">
+        <div class="media-body">
+            
 
-{% if tasks_list %}
+            <h2>Урок №{{ lesson.id }} {{ lesson.title }}</h2>
+            <hr>
+            <br>
+            {% if tasks_list %}
 
-    <p>Задание №{{task.task_num}}</p>
-    <p></p>
-    <p></p>
-    <p>{{task.task_part}}  {{task.task_title}}</p>
-    <p></p>
-    <p>{{task.task_text}}</p>
-    <!-- {% for b in tasks_list %}
-        <p>
-            <p>{{b.task_num}}</p>
+            <b>Задание №{{task.task_num}}</b>
             <p></p>
             <p></p>
-            <p>{{b.task_part}}  {{b.task_title}}</p>
+            <p>{{task.task_part}})  {{task.task_title}}</p>
             <p></p>
-            <p>{{b.task_text}}</p>
-        </p>
-    {% endfor %} -->
+            {% autoescape off %}
+                {{ task.content|linebreaks|safe }}
+            {% endautoescape %}
 
-{% else %}
-Заданий пока нет
-{% endif %}
+            {% else %}
+            Заданий пока нет
+            {% endif %}
 
-{% if not a1 %}
-<form action="{% url 'lessons:next_task' lesson.id task.task_num task.task_part %}" method="POST">
+            {% if not a1 %}
+            <form action="{% url 'lessons:next_task' lesson.id task.task_num task.task_part %}" method="POST">
 
-    {% csrf_token %}
-    
-    <textarea name="text" required="" placeholder="Текст ответа" cols="70" rows="2"></textarea><br>
-    
-    <button type="submit">Следующее</button>
-              
-</form>
-{% endif %}
+                {% csrf_token %}  
 
-{% if a1 %}
-    <form action="{% url 'lessons:task_detail' lesson.id task.task_num task.task_part %}" method="POST"></form>
-        
-        {% csrf_token %}
+                <textarea name="text" required="" placeholder="Текст ответа" cols="70" rows="2"></textarea><br>
+                <button type="submit">Следующее</button>
+                
+            </form>
 
-        <p><b>Варианты ответа:</b></p>
-        <p><input type="radio" name="answer" value="a1">{{ a1 }}<Br>
-        <input type="radio" name="answer" value="a2">{{ a2 }}<Br>
-        <p><input type="submit" value="Отправить"></p>
-    </form>
-    <hr>
-{% endif %}
+            {% else %}
+
+            <form action="{% url 'lessons:next_task' lesson.id task.task_num task.task_part %}" method="POST">
+                    
+                    {% csrf_token %}
+
+                    <p><b>Варианты ответа:</b></p>
+                    <p><input type="radio" name="answer" value="{{ a1 }}">{{ a1 }}<Br>
+                    <input type="radio" name="answer" value="{{ a2 }}">{{ a2 }}<Br>
+                    <p><input type="submit" value="Отправить"></p>
+                
+            </form>
+            
+            <hr>
+
+            {% endif %}
+            <br>
+            <a class="btn btn-outline-secondary float-sm-right" style="margin-right:2.1em" href="{% url 'lessons:end_task' lesson_id=1 task_num=1 task_part=1 %}">Завершить</a>
+
+
+
+            <br>
+            <p>{{task.task_part}} из {{task.partcounter}}</p>
+            <br>
+        </div>
+        <hr>
+    </article>   
+
  
 {% endblock %}

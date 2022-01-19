@@ -4,17 +4,21 @@
 
 {% block content %}
 
-<h2>Список заданий:</h2>
+    <article class="media content-section">
+        <div class="media-body">
+            <h2>Список заданий:</h2>
+            <br>
+            <br>
+            {% if tasks_list %}
 
-    {% if tasks_list %}
+            {% for b in tasks_list %}
+                <p><a href="{% url 'lessons:task_detail' b.lesson_id b.task_num 1 %}">{{b.task_num}}</a></p>
+            {% endfor %}
 
-        {% for b in tasks_list %}
-            <p><a href="{% url 'lessons:task_detail' lesson.id b.task_num b.task_part %}">{{b.task_num}}</a></p>
-        {% endfor %}
-
-    {% else %}
-        Задания не найдены
-    {% endif %}
-
+            {% else %}
+                Задания не найдены
+            {% endif %}
+        </div>
+    </article>
 
 {% endblock %}

@@ -1,5 +1,5 @@
 """
-ASGI config for japanese project.
+ASGI config for django_channel_tutorial project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

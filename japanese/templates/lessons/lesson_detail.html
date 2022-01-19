@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}{{lesson.title}}{% endblock %}
+
+{% block content %}
+
+    <article class="media content-section">
+        <div class="media-body">
+            <div class="article-metadata">        
+                {% if user.profile.m_role == 'Administrator' or user.profile.m_role == 'Teacher' %}
+                    <a class ="bnt btn-secondary btn-sm mt-1 mb-1" href="{% url 'lessons:lesson-update' object.id %}">Редактировать</a>
+                    <a class ="bnt btn-danger btn-sm mt-1 mb-1" href="{% url 'lessons:lesson-delete' object.id %}">Удалить</a>
+                    <br>
+                    <br>
+                {% endif %}
+            
+            </div>
+            <h2>Урок №{{object.lesson_num}}:  {{object.title}}</h2>
+            <br>
+            {% autoescape off %}
+                {{ object.content|linebreaks|safe }}
+            {% endautoescape %}
+            <br>
+            <details>
+                <summary>Слова</summary>
+                <p></p>
+                {% if object.words.all %}
+                    <table border="1">
+                        <tr>
+                            <th>Слово</th>
+                            <th>Транскрипция</th>
+                            <th>Перевод</th>
+                            <th>Часть речи</th>
+                            <th>Урок</th>
+                        </tr>
+                        {% for word in object.words.all %}
+                        <tr>
+                            <td>{{word.word_name}}</td>
+                            <td>{{word.transcription}}</td>
+                            <td>{{word.word_translation}}</td>
+                            <td>{{word.word_sp}}</td>
+                            <td>{{word.lesson_id}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    
+
+                {% else %}
+                ГДЕ СЛОВА
+                {% endif %}
+
+            </details>
+            <br>
+
+            <details>
+                <summary>Кандзи</summary>
+                <p></p>
+                {% if object.kanjis.all %}
+                    <table border="1">
+                        <tr>
+                            <th>Кандзи</th>
+                            <th>Значения</th>
+                            <th>Кунное чтение</th>
+                            <th>Онное чтение</th>
+                            <th>Количество черт</th>
+                            <th>Юникод</th>
+                        </tr>
+                        {% for kanji in object.kanjis.all %}
+                        <tr>
+                            <td>{{kanji.kanji_name}}</td>
+                            <td>{{kanji.meanings}}</td>
+                            <td>{{kanji.kunyomi}}</td>
+                            <td>{{kanji.onyomi}}</td>
+                            <td>{{kanji.linesqty}}</td>
+                            <td>{{kanji.code}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    
+
+                {% else %}
+                А КАНДЗИ
+                {% endif %}
+
+            </details>
+
+            <p></p>
+
+            <a class="btn btn-outline-primary" href="/lessons/{{lesson.id}}/tasks/{{task.id}}">Задания</a>
+        </div>
+        <hr>
+    </article>
+
+
+
+{% endblock %}

@@ -1,14 +1,279 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="utf-8">
+  
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <link rel="stylesheet" type="text/css" href="{% static 'japanese/main.css' %}">
 
   <title>{% block title %}日本語{% endblock %}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  
+  <script src="https://kit.fontawesome.com/30a00e168d.js" crossorigin="anonymous"></script>
+
+  <style>
+
+  .dropbtn {
+    background-color: Transparent;
+    color: #9c414d;
+    padding: 5px 10px;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #d4d3d3;
+    border-radius: 8px;
+  }
+
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  .dropdown-content a {
+    color: black;
+    padding: 10px 16px;
+    text-decoration: none;
+    display: block;
+  }
+
+  .dropdown a:hover {background-color: #ddd;}
+
+  .show {display: block;}
+
+  #keyboard {
+  display: block;
+  border: 2px solid black;
+  padding: 5px;
+  }
+
+  #keyboard:after {
+  content: "";
+  display: block;
+  clear: both;
+  }
+
+  .k-key {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    margin: 3px;
+    padding: 3px;
+    float: left;
+  }
+
+  .clearfix {
+    display: block;
+    width: 100%;
+    clear: both;
+  }
+
+  .active {
+    background: orange;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+  color: #444444;
+  }
+
+  .btn {
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  text-allign: center;
+  margin: auto;
+  line-height: 1,5em;
+  line-width: 2em;
+  background-position: center;
+  }
+
+  .btn-inline-danger {
+    width: 125px;
+    text-allign: center;
+    background-position: center;
+  }
+
+  </style>
 </head>
 
 <body>
     
-    {% block content %}{% endblock %}
+  <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm">
+    <h5 class="my-0 mr-md-auto font-weight-normal"><a class="p-2 text-dark" href="/">Dekiru</a></h5>
+    <nav class="my-2 my-md-0 mr-md-3">
+      <a class="p-2 text-dark" href="{% url 'articles:index' %}">Статьи</a>
+      {% if user.is_authenticated %}
+        <a class="p-2 text-dark" href="{% url 'lessons:index' %}">Уроки</a>
+        <a class="p-2 text-dark" href="/perfomance/">Успеваемость</a>
+        <a class="btn btn-inline-danger btn-xs" style="margin-left:1.1em" href="{% url 'profile' %}">
+          {{ request.user.username }} &nbsp;
+          <img class="rounded-circle account-img" style="width:40px; height:40px" src="{{ user.profile.image.url }}"/>
+        </a>
+        <a class="btn btn-outline-danger" href="{% url 'logout' %}">Выйти</a>
+      {% else %}
+        <a class="btn btn-outline-danger" href="{% url 'login' %}">Войти</a>
+        <a class="btn btn-outline-danger" href="{% url 'register' %}">Регистрация</a>
+      {% endif %}
+      
+    </nav>
+
     
+    {% if user.profile.m_role == 'Administrator' or user.profile.m_role == 'Teacher' %}
+
+     <div class="dropdown">
+      <button onclick="myFunction()" class="dropbtn">
+        <i class="fas fa-align-justify"></i>
+      </button>
+      <div id="myDropdown" class="dropdown-content" style="right:0;">
+        <a href="{% url 'articles:article-create' %}">Добавить статью</a>
+        <a href="{% url 'lessons:lesson-create' %}">Добавить урок</a>
+        {% if 'tasks/' in request.path %}
+          <a href="{% url 'lessons:task-create' %}">Добавить задание</a>
+        {% endif %}
+      </div>
+    </div> 
+
+    {% endif %}
+  </div>
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  <main role="main" class="container">
+    <div class="row">
+      <div class="col-md-8">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+  </main>
+  
+<script>
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn, ".fas fa-align-justify"')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
+
+const keyboard = [
+  113,
+  119,
+  101,
+  114,
+  116,
+  121,
+  117,
+  105,
+  111,
+  112,
+  91,
+  93,
+  97,
+  115,
+  100,
+  102,
+  103,
+  104,
+  106,
+  107,
+  108,
+  59,
+  39,
+  92,
+  122,
+  99,
+  118,
+  98,
+  110,
+  109,
+  44,
+  46,
+  47
+];
+{% comment %} document.onkeypress = function(event){
+    // console.log(event);
+    keyboard.push(event.charCode);
+    console.log(keyboard);
+} {% endcomment %}
+
+function init() {
+  let out = '';
+  for (let i = 0;i < keyboard.length; i++){
+    if (i==12 || i==24) {
+      out += '<div class="clearfix"></div>';
+    }
+    out +='<div class="k-key" data="'+ keyboard[i] +'">'+ String.fromCharCode(keyboard[i]) +'</div>';
+  }
+  document.querySelector('#keyboard').innerHTML = out;
+}
+
+init();
+
+document.onkeypress = function(event){
+  console.log(event.code);
+  console.log(event.keyCode);
+  document.querySelectorAll('#keyboard .k-key').forEach(function(element){
+    element.classList.remove('active');
+  })
+  document.querySelector('#keyboard .k-key[data="'+event.keyCode+'"]').classList.add('active');
+}
+
+document.querySelectorAll('#keyboard .k-key').forEach(function(element){
+  element.onclick = function(event){
+    document.querySelectorAll('#keyboard .k-key').forEach(function(element){
+      element.classList.remove('active');
+    });
+    let code = this.getAttribute('data');
+    this.classList.add('active');
+    console.log(code);
+  }
+})
+
+
+
+</script>
+
+  
+  <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    
+  
 </body>
 </html>

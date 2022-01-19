@@ -10,7 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os, sys
+import os, sys, os.path
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,10 +23,10 @@ sys.path.insert(0, os.path.join(PROJECT_ROOT, 'apps'))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ojxe!g2*r@^kh6m4@lun!6u=g_)4=%ofx$p(@c_ow%-x)%egh5'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast = bool)
 
 ALLOWED_HOSTS = []
 
@@ -33,11 +34,21 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'grappelli',
-    'django_tables2',
+    'grappelli',        #Интерфейс админки
+    'chartjs',      #Графики
+    'ckeditor',     #Инструменты
+    'ckeditor_uploader',        
+    'django_tables2',       #для отчетности (не работает?)
     'django_jinja',
+    'django_filters',
+    'widget_tweaks',
+    'channels',
+    'chat',
     'articles.apps.ArticlesConfig',
     'lessons.apps.LessonsConfig',
+    'mainApp.apps.MainappConfig',
+    'users.apps.UsersConfig',
+    'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,6 +143,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'japanese.wsgi.application'
 
+ASGI_APPLICATION = "japanese.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -142,11 +163,11 @@ DATABASES = {
         'OPTIONS': {
         		'options': '-c search_path=websys'
         },
-        'NAME': 'examplet',
-        'USER': 'postgres',
-        'PASSWORD': '29t7hkpg737',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': config("DATABASE_NAME"),
+        'USER': config("DATABASE_USERNAME"),
+        'PASSWORD': config("DATABASE_PASSWORD"),
+        'HOST': config("DATABASE_HOST"),
+        'PORT': config("DATABASE_PORT", cast = int),
     }
 }
 
@@ -170,13 +191,40 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': [
+            ['Undo', 'Redo',
+             '-', 'Bold', 'Italic', 'Underline',
+             '-', 'Link', 'Unlink', 'Anchor',
+             '-', 'Format',
+             '-', 'Maximize',
+             '-', 'Table',
+             '-', 'Image',
+             '-', 'Source',
+             '-', 'NumberedList', 'BulletedList'
+            ],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock',
+             '-', 'Font', 'FontSize', 'TextColor',
+             '-', 'Outdent', 'Indent',
+             '-', 'HorizontalRule',
+             '-', 'Blockquote'
+            ]
+        ],
+        'height': 500,
+        'width': '100%',
+        'toolbarCanCollapse': False,
+        'forcePasteAsPlainText': True
+    }
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 LANGUAGE_CODE = 'ru-RU'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Novosibirsk'
 
 USE_I18N = True
 
@@ -190,4 +238,24 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [STATIC_DIR]
+
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_REDIRECT_URL = 'mainApp:index'
+LOGIN_URL = 'login'
+
+# TORTOISE_INIT = {
+#     "db_url": "postgres://postgres:29t7hkpg737@db.localhost:5432/examplet",
+#     "modules" : {
+#         "models": ["chat.tortoise_models", "aerich.models"]
+#      }
+# }
